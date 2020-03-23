@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "sourceMap": true
+  },
+  "files": [
+    "./node_modules/@types/jest/index.d.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "demo/**/*.ts",
+    "jest.config.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

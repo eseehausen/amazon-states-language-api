@@ -1,0 +1,30 @@
+{
+  "name": "amazon-states-language-api",
+  "version": "1.0.0",
+  "description": "Amazon States Language API",
+  "main": "index.js",
+  "author": "Evan Seehausen",
+  "license": "MIT",
+  "dependencies": {
+    "@wmfs/statelint": "^1.12.0",
+    "jsonpath": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "test": "jest --watch --verbose false",
+    "tsc": "tsc",
+    "ts-node": "ts-node",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./"
+  }
+}
