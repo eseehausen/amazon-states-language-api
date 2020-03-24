@@ -29,5 +29,7 @@ export default class PassState extends State {
     return passStateJsonObject;
   };
 
-  getSimulationOutputJsonObject = (input: Json): Json => this.result || input;
+  getSimulationOutputJsonObject = (input: Json): Json => (
+    this.result !== undefined ? this.result : input
+  );
 }

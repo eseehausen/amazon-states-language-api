@@ -52,7 +52,7 @@ export default class StateMachine {
 Comment: ${this.comment || ''}
 Amazon States Language Version: ${this.version}
 StartAt: ${this.getStartingState().getName()}
-TimeoutSeconds: ${this.timeoutSeconds}`;
+TimeoutSeconds: ${this.timeoutSeconds || 'N/A'}`;
 
   getStartingState = (): State => this.startingState;
 }

@@ -12,7 +12,8 @@
     "src/**/*.ts",
     "demo/**/*.ts",
     "jest.config.js",
-    "typings/**/index.d.ts"
+    "typings/**/index.d.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules"

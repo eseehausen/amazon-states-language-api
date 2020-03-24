@@ -73,6 +73,8 @@ Clashing state: ${this.name} Attempted next state: ${next.name}`,
     const labelModifier = this.isEndState() ? 'Final' : 'Current';
     const commentString: string = this.comment !== undefined ? `\nComment: ${this.comment}` : '';
     return `${labelModifier} state: ${this.getName() + commentString}
+Input:
+${JSON.stringify(input)}
 Output:
 ${JSON.stringify(this.getSimulationOutputJsonObject(input))}
 `; // if this doesn't end up being overridden, it should move into the output interface

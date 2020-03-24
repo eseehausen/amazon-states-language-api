@@ -19,8 +19,8 @@ const testTaskState = new TaskState(
 describe('getSimulationOutputJson', () => {
   test('should successfully run mock', () => {
     const testInputString = 'inputted';
-    const output = testTaskState.getSimulationOutputJsonObject(testInputString);
-    expect(output).toEqual([testInputString, testOutputString]);
+    const outputObject = testTaskState.getSimulationOutput(testInputString).jsonObject;
+    expect(outputObject).toEqual([testInputString, testOutputString]);
   });
 });
 

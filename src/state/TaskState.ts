@@ -9,7 +9,7 @@ export default class TaskState extends State {
     comment?: string,
     next?: State,
   ) {
-    super('Pass', name, comment, next);
+    super('Task', name, comment, next);
     if (!resource.uri.match(/arn(:[A-Za-z0-9_-]+){6}/)) {
       throw new Error(`Unexpected ARN format in Task state ${name}`);
     }
