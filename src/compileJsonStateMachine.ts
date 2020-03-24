@@ -1,5 +1,5 @@
 import * as StateLint from '@wmfs/statelint';
-import StateMachineJsonInterface from './StateMachine/StateMachineJsonInterface';
+import StateMachineJsonInterface from './stateMachine/StateMachineJsonInterface';
 
 export default function compileJsonStateMachine(stateMachineJsonObject: StateMachineJsonInterface):
   {

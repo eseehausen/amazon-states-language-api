@@ -1,5 +1,5 @@
-import PassState from './State/PassState';
-import StateMachine from './StateMachine/StateMachine';
+import PassState from '../state/PassState';
+import StateMachine from '../stateMachine/StateMachine';
 import interpretStateMachine from './interpretStateMachine';
 
 test('Basic state machine interpretation', () => {
@@ -15,7 +15,6 @@ test('Basic state machine interpretation', () => {
   const finalState = new PassState(thirdStateName);
 
   const stateMachine = new StateMachine(startingState, testComment, testTimeout);
-  const stateMachineJson = stateMachine.getJsonObject();
 
   const firstResult = interpretStateMachine(
     stateMachine.getSimulationOutput(),

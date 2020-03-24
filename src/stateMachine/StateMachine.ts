@@ -1,4 +1,4 @@
-import State from '../State/State';
+import State from '../state/State';
 import StateMachineJsonInterface from './StateMachineJsonInterface';
 import StatesJsonInterface from './StatesJsonInterface';
 
@@ -39,22 +39,20 @@ export default class StateMachine {
       States: this.collectStatesJsonObject({}, this.startingState),
       Version: this.version,
     };
-    if(this.timeoutSeconds !== undefined) {
+    if (this.timeoutSeconds !== undefined) {
       jsonObject.TimeoutSeconds = this.timeoutSeconds;
     }
-    if(this.comment !== undefined) {
+    if (this.comment !== undefined) {
       jsonObject.Comment = this.comment;
     }
     return jsonObject;
   };
 
-  getSimulationOutput = (): string => {
-    return `State Machine
+  getSimulationOutput = (): string => `State Machine
 Comment: ${this.comment || ''}
 Amazon States Language Version: ${this.version}
 StartAt: ${this.getStartingState().getName()}
 TimeoutSeconds: ${this.timeoutSeconds}`;
-  };
 
   getStartingState = (): State => this.startingState;
 }

@@ -1,5 +1,4 @@
-import StateMachine from './StateMachine/StateMachine';
-import State from './State/State';
+import State from '../state/State';
 
 export default function interpretStateMachine(
   stateMachineSimulationOutput: string,
@@ -24,11 +23,11 @@ STATE MACHINE FINISHED
 `;
 
   while (!currentState.isEndState()) {
-    output += currentState.getSimulationOutput();
+    output += currentState.getSimulationOutputString();
     currentState = currentState.getNextState();
   }
 
-  output += currentState.getSimulationOutput() + footer;
+  output += currentState.getSimulationOutputString() + footer;
 
   return output;
 }

@@ -1,6 +1,5 @@
-import PassState from '../State/PassState';
+import PassState from '../state/PassState';
 import StateMachine from './StateMachine';
-import StatesJsonInterface from './StatesJsonInterface';
 
 describe('getJsonObject', () => {
   test('returns JSON ready information about StateMachine', () => {

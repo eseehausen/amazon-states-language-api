@@ -4,8 +4,9 @@ import PassStateJsonInterface from './PassStateJsonInterface';
 export default class PassState extends State {
   constructor(
     name: string,
-    comment?: string,
+    private result?: Json,
     next?: State,
+    comment?: string,
   ) {
     super('Pass', name, comment, next);
   }
@@ -21,13 +22,12 @@ export default class PassState extends State {
   getNextState = (): State|undefined => this.next;
 
   getJsonObject = (): PassStateJsonInterface => {
-    const passStateJsonObject: PassStateJsonInterface = { ...this.getBaseJsonObject() };
-
-    if (this.next !== undefined) {
-      passStateJsonObject.Next = this.next.getName();
+    const passStateJsonObject: PassStateJsonInterface = { ...this.getBaseJsonObject(true) };
+    if (this.result) {
+      passStateJsonObject.Result = JSON.stringify(this.result);
     }
-
-    passStateJsonObject.End = this.isEndState();
     return passStateJsonObject;
   };
+
+  getSimulationOutputJsonObject = (input: Json): Json => this.result || input;
 }

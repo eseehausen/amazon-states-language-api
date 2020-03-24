@@ -1,7 +1,6 @@
 import compileJsonStateMachine from './compileJsonStateMachine';
 
 test('Basic compilation', () => {
-
   const goodStateMachine = {
     Comment: 'A simple minimal example of the States language',
     StartAt: 'Hello World',
