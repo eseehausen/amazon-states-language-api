@@ -1,5 +1,4 @@
 import StateJsonObjectInterface from './StateJsonInterface';
-import SimulationOutputInterface from '../simulation/SimulationOutputInterface';
 
 export default abstract class State {
   protected constructor(
@@ -62,23 +61,36 @@ Clashing state: ${this.name} Attempted next state: ${next.name}`,
 
   abstract isEndState(): boolean;
 
-  getSimulationOutput(input?: Json): SimulationOutputInterface {
+  protected getSimulationOutput(input?: Json): SimulationOutputInterface {
     return {
       string: this.getSimulationOutputString(input),
       jsonObject: this.getSimulationOutputJsonObject(input),
     };
   }
 
-  getSimulationOutputString(input?: Json): string {
+  protected getSimulationOutputString(input?: Json): string {
     const labelModifier = this.isEndState() ? 'Final' : 'Current';
     const commentString: string = this.comment !== undefined ? `\nComment: ${this.comment}` : '';
     return `${labelModifier} state: ${this.getName() + commentString}
+
 Input:
 ${JSON.stringify(input)}
+
 Output:
 ${JSON.stringify(this.getSimulationOutputJsonObject(input))}
 `; // if this doesn't end up being overridden, it should move into the output interface
   }
 
   protected abstract getSimulationOutputJsonObject(input?: Json): Json;
+
+  getOutputGeneratorFunction(): StateOutputGeneratorFunction {
+    return (function* stateOutputGenerator(state: State, input: Json):
+      Generator<SimulationOutputInterface> {
+      const output = state.getSimulationOutput(input);
+      yield output;
+      if (!state.isEndState()) {
+        yield* stateOutputGenerator(state.getNextState(), output.jsonObject);
+      }
+    }).bind(this, this);
+  }
 }

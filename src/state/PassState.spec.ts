@@ -12,27 +12,28 @@ const onlyNextPassState = new PassState(
   onlyNextPassStateName, undefined, endPassStateWithCommentAndResult,
 );
 
-describe('getSimulationOutput', () => {
+describe('getOutputGeneratorFunction', () => {
   const testInputString = 'inputted';
-  const onlyNextPassStateOutput = onlyNextPassState.getSimulationOutput(testInputString);
-  const endPassStateWithCommentAndResultOutput = endPassStateWithCommentAndResult
-    .getSimulationOutput(testInputString);
+  const passThroughOutputGeneratorFunction = onlyNextPassState.getOutputGeneratorFunction();
+  const passThroughOutputIterator = passThroughOutputGeneratorFunction(testInputString);
+  const passThroughOutput = passThroughOutputIterator.next().value;
+  const resultOutput = passThroughOutputIterator.next().value;
 
   test('should successfully pass through input', () => {
-    expect(onlyNextPassStateOutput.jsonObject).toEqual(testInputString);
+    expect(passThroughOutput.jsonObject).toEqual(testInputString);
   });
 
   test('should successfully pass through result', () => {
-    expect(endPassStateWithCommentAndResultOutput.jsonObject).toEqual(testResult);
+    expect(resultOutput.jsonObject).toEqual(testResult);
   });
 
   test('should show name, comment, and expected result in string output', () => {
-    expect(onlyNextPassStateOutput.string).toContain(onlyNextPassState.getName());
-    expect(onlyNextPassStateOutput.string).toContain(JSON.stringify(testInputString));
-    expect(onlyNextPassStateOutput.string).not.toContain('Comment:');
+    expect(passThroughOutput.string).toContain(onlyNextPassState.getName());
+    expect(passThroughOutput.string).toContain(JSON.stringify(testInputString));
+    expect(passThroughOutput.string).not.toContain('Comment:');
 
-    expect(endPassStateWithCommentAndResultOutput.string).toContain(testComment);
-    expect(endPassStateWithCommentAndResultOutput.string).toContain(JSON.stringify(testResult));
+    expect(resultOutput.string).toContain(testComment);
+    expect(resultOutput.string).toContain(JSON.stringify(testResult));
   });
 });
 

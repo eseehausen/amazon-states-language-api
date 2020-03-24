@@ -1,4 +1,4 @@
-import simulateStateMachine from '../src/simulation/simulateStateMachine';
+import StateMachineInterpreter from '../src/StateMachineInterpreter';
 import testStateMachine from './globals/testStateMachine';
 import testTaskState from './globals/testTaskState';
 import testPassState from './globals/testPassState';
@@ -8,19 +8,34 @@ describe('simulationIntegrationTest', () => {
     const startingInput = {
       startingInput: 'start',
     };
-    const outputString = simulateStateMachine(
-      testStateMachine.getSimulationOutput(), // TODO test this interface
-      testTaskState.setNextState(testPassState),
+    const outputString = StateMachineInterpreter.simulateStateMachine(
+      testStateMachine.getSimulationOutputString(), // TODO test these interfaces
+      testTaskState.setNextState(testPassState).getOutputGeneratorFunction(),
       startingInput,
     );
     expect(outputString).toContain(testTaskState.getName());
     expect(outputString).toContain(testPassState.getName());
 
-    const startingOutput = testTaskState.getSimulationOutput(startingInput);
+    const simulationOutputIterator = testTaskState.getOutputGeneratorFunction()(startingInput);
+    const startingOutput = simulationOutputIterator.next().value;
+
+    console.log(outputString);
 
     expect(outputString).toContain(startingOutput.string);
     expect(outputString)
-      .toContain(testPassState.getSimulationOutputString(startingOutput.jsonObject));
-    // TODO need to better organize this, since it's too dependent on knowing the imports.
+      .toContain(JSON.stringify(startingOutput.jsonObject));
+
+    const finalOutputResult = simulationOutputIterator.next();
+    const finalOutput = finalOutputResult.value;
+
+
+    expect(outputString).toContain(finalOutput.string);
+    expect(outputString)
+      .toContain(JSON.stringify(finalOutput.jsonObject));
+    // TODO need to better organize this, since it's too dependent on knowing the imports
+    //  also iterate over the states when checking
+
+    expect(finalOutputResult.done).toBe(false);
+    expect(simulationOutputIterator.next().done).toBe(true);
   });
 });
