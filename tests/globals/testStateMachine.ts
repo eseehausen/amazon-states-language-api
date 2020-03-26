@@ -4,7 +4,7 @@ import testTaskState from './testTaskState';
 
 const startingState = testTaskState.setNextState(testPassState);
 const testStateMachine: StateMachine = new StateMachine(
-  startingState,
+  startingState.getStateJsonInformationGeneratorFunction(),
   'Test State Machine',
   100,
 );

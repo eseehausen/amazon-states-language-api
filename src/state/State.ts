@@ -1,25 +1,24 @@
 import StateJsonObjectInterface from './StateJsonInterface';
+import validateField from '../validateField';
+import StateJsonInformationInterface from './StateJsonInformationInterface';
 
 export default abstract class State {
   protected constructor(
     protected readonly type: string,
     protected readonly name: string,
     protected readonly comment?: string,
-    protected next?: State,
   ) {
-    if (name.length > 128) {
-      throw new Error(`State name cannot exceed 128 characters. Clashing name: ${this.name}`); // TODO TEST
-    }
-
-    if (next !== undefined && !this.canHaveNextState()) {
-      throw new Error(
-        `State cannot take a next state.
-Clashing state: ${this.name} Attempted next state: ${next.name}`,
-      );
-    }
+    validateField(
+      name,
+      {
+        errorMessage: `State name cannot exceed 128 characters. Clashing name: ${name}`,
+        test: (nameValue) => nameValue.length <= 128,
+      },
+      true,
+    );
   }
 
-  getBaseJsonObject = (includeNextAndEnd: boolean): StateJsonObjectInterface => {
+  protected getJsonObject(): StateJsonObjectInterface {
     const baseJsonObject: StateJsonObjectInterface = {
       Type: this.type,
     };
@@ -29,56 +28,24 @@ Clashing state: ${this.name} Attempted next state: ${next.name}`,
       baseJsonObject.Comment = this.comment;
     }
 
-    if (includeNextAndEnd) {
-      if (this.next !== undefined) {
-        baseJsonObject.Next = this.next.getName();
-      }
-      baseJsonObject.End = this.isEndState();
+    if (this.isEndState()) {
+      baseJsonObject.End = true;
     }
 
     return baseJsonObject;
-  };
-
-  abstract getJsonObject (): StateJsonObjectInterface;
+  }
 
   getName = (): string => this.name;
+  // needed for StartAt JSON assignment for now
 
-  setNextState = (nextState: State): State => { // return State for chaining
-    this.next = nextState;
-    return this;
-  };
-
-  appendState = (appendedState: State): State => { // return appendedState for chaining
-    this.setNextState(appendedState);
-    return appendedState;
-  };
-
-  abstract getNextState(): State|undefined;
-
-  // may want to just flip to a default in the constructor, since most states can,
-  // and it's not clear that we need to do any processing here
-  protected abstract canHaveNextState(): boolean;
-
-  abstract isEndState(): boolean;
+  protected abstract isEndState(): boolean;
 
   protected getSimulationOutput(input?: Json): SimulationOutputInterface {
     return {
-      string: this.getSimulationOutputString(input),
-      jsonObject: this.getSimulationOutputJsonObject(input),
+      input,
+      output: this.getSimulationOutputJsonObject(input),
+      stateJsonObject: this.getJsonObject(),
     };
-  }
-
-  protected getSimulationOutputString(input?: Json): string {
-    const labelModifier = this.isEndState() ? 'Final' : 'Current';
-    const commentString: string = this.comment !== undefined ? `\nComment: ${this.comment}` : '';
-    return `${labelModifier} state: ${this.getName() + commentString}
-
-Input:
-${JSON.stringify(input)}
-
-Output:
-${JSON.stringify(this.getSimulationOutputJsonObject(input))}
-`; // if this doesn't end up being overridden, it should move into the output interface
   }
 
   protected abstract getSimulationOutputJsonObject(input?: Json): Json;
@@ -89,8 +56,27 @@ ${JSON.stringify(this.getSimulationOutputJsonObject(input))}
       const output = state.getSimulationOutput(input);
       yield output;
       if (!state.isEndState()) {
-        yield* stateOutputGenerator(state.getNextState(), output.jsonObject);
+        yield* stateOutputGenerator(state.getNextState(), output.output);
       }
     }).bind(this, this);
+  }
+
+  protected getNextState = (): State|null => null;
+
+  getStateJsonInformationGeneratorFunction = (): () => Generator<StateJsonInformationInterface> => (
+    function* pathGenerator(state: State): Generator<StateJsonInformationInterface> {
+      yield {
+        name: state.getName(),
+        jsonObject: state.getJsonObject(),
+      };
+      const nextState = state.getNextState();
+      if (nextState instanceof State) {
+        yield* pathGenerator(nextState);
+      }
+    }.bind(this, this)
+  );
+
+  getSimulatedOutput(input: Json): SimulationOutputInterface { // useful for testing
+    return this.getOutputGeneratorFunction()(input).next().value;
   }
 }

@@ -1,8 +1,8 @@
-import PassState from '../state/PassState';
+import PassState from '../state/passState/PassState';
 import StateMachine from './StateMachine';
 
 describe('getJsonObject', () => {
-  test('returns JSON ready information about StateMachine', () => {
+  it('should return JSON ready information about StateMachine', () => {
     const version = '1.0';
     const firstStateName = 'First State';
     const secondStateName = 'Second State';
@@ -17,7 +17,7 @@ describe('getJsonObject', () => {
       .appendState(finalState);
 
     const stateMachine = new StateMachine(
-      startingState,
+      startingState.getStateJsonInformationGeneratorFunction(),
       stateMachineComment,
       stateMachineTimeout,
     );
@@ -30,10 +30,12 @@ describe('getJsonObject', () => {
       Version: version,
       TimeoutSeconds: stateMachineTimeout,
     }));
+
     expect(Object.keys(firstJsonObject.States).length).toEqual(3);
 
-    const sparseStateMachine = new StateMachine(finalState);
-    expect(sparseStateMachine.getStartingState()).toEqual(finalState);
+    const sparseStateMachine = new StateMachine(
+      finalState.getStateJsonInformationGeneratorFunction(),
+    );
     expect(sparseStateMachine.getJsonObject()).toEqual({
       StartAt: thirdStateName,
       Version: version,

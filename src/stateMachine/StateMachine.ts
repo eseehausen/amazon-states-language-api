@@ -1,6 +1,7 @@
-import State from '../state/State';
 import StateMachineJsonInterface from './StateMachineJsonInterface';
 import StatesJsonInterface from './StatesJsonInterface';
+import validateField from '../validateField';
+import StateJsonInformationInterface from '../state/StateJsonInformationInterface';
 
 
 // TODO - allow this class to copy a chain of states to lock it in
@@ -8,37 +9,63 @@ export default class StateMachine {
   private version = '1.0';
   // this is the current default and the spec this is based on
 
+  private readonly statesJsonObject: StatesJsonInterface;
+
+  private readonly startAt: string;
+
   constructor(
-    private startingState: State,
+    stateJsonInformationGeneratorFunction: () => Generator<StateJsonInformationInterface>,
     private comment?: string,
     private timeoutSeconds?: number,
-  ) { }
+  ) {
+    this.statesJsonObject = this.collectStatesJsonObject(
+      {}, stateJsonInformationGeneratorFunction(),
+    );
+
+    this.startAt = stateJsonInformationGeneratorFunction().next().value.name;
+
+    const timeoutSecondsUpperLimit = 99999999;
+    if (timeoutSeconds !== undefined) {
+      validateField(
+        timeoutSeconds,
+        {
+          errorMessage: `TimeoutSeconds must be less than ${timeoutSecondsUpperLimit}`,
+          test: (timeoutSecondsValue: number): boolean => (
+            timeoutSecondsValue < timeoutSecondsUpperLimit
+          ),
+        },
+        true,
+      );
+    }
+  }
 
   collectStatesJsonObject = (
-    baseStatesJsonObject: StatesJsonInterface, state: State,
+    baseStatesJsonObject: StatesJsonInterface,
+    stateJsonInformationIterator: IterableIterator<StateJsonInformationInterface>,
   ): StatesJsonInterface => {
-    // TODO: currently doesn't really catch infinite loops
-
-    const stateName = state.getName();
-    const nextState = state.getNextState();
-
-    const stateAlreadyPresent = Object.prototype.hasOwnProperty.call(
-      baseStatesJsonObject, stateName,
-    );
-    const statesJsonObject = { ...baseStatesJsonObject };
-
-    if (!stateAlreadyPresent) {
-      statesJsonObject[stateName] = state.getJsonObject();
+    const stateJsonInformationIteratorResult = stateJsonInformationIterator.next();
+    if (!stateJsonInformationIteratorResult.done) {
+      const { name, jsonObject } = stateJsonInformationIteratorResult.value;
+      const stateAlreadyPresent = Object.prototype.hasOwnProperty.call(
+        baseStatesJsonObject, name,
+      );
+      if (!stateAlreadyPresent) {
+        return this.collectStatesJsonObject(
+          {
+            ...baseStatesJsonObject,
+            [name]: jsonObject,
+          },
+          stateJsonInformationIterator,
+        );
+      }
     }
-
-    return (stateAlreadyPresent || nextState === undefined)
-      ? statesJsonObject : this.collectStatesJsonObject(statesJsonObject, state.getNextState());
+    return baseStatesJsonObject;
   };
 
   getJsonObject = (): StateMachineJsonInterface => {
     const jsonObject: StateMachineJsonInterface = {
-      StartAt: this.startingState.getName(),
-      States: this.collectStatesJsonObject({}, this.startingState),
+      StartAt: this.startAt,
+      States: this.statesJsonObject,
       Version: this.version,
     };
     if (this.timeoutSeconds !== undefined) {
@@ -53,8 +80,6 @@ export default class StateMachine {
   getSimulationOutputString = (): string => `State Machine
 Comment: ${this.comment || ''}
 Amazon States Language Version: ${this.version}
-StartAt: ${this.getStartingState().getName()}
+StartAt: ${this.startAt}
 TimeoutSeconds: ${this.timeoutSeconds || 'N/A'}`;
-
-  getStartingState = (): State => this.startingState;
 }

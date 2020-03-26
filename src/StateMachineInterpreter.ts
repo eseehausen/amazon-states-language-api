@@ -14,7 +14,15 @@ export default class StateMachineInterpreter {
     const statesOutputString = Array.from(outputGenerator).reduce(
       (
         outputString: string, output: SimulationOutputInterface,
-      ) => `${outputString}\n${divider}\n${output.string}`, '',
+      ) => `${outputString}\n${divider}
+${JSON.stringify(output.stateJsonObject)}
+
+Input:
+${JSON.stringify(output.input)}
+
+Output:
+${JSON.stringify(output.output)}
+`, '',
     );
 
     return `${header}\n${stateMachineSimulationOutputString}${statesOutputString}${footer}`;

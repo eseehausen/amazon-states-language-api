@@ -1,10 +1,5 @@
-import PassState from '../../src/state/PassState';
+import PassState from '../../src/state/passState/PassState';
 
-const testPassState: PassState = new PassState(
-  'Test Pass State',
-  { result: 'end' },
-  undefined,
-  'Test Pass State',
-);
+const testPassState: PassState = new PassState('Test Pass State', undefined, { result: 'end' }, 'Test Pass State');
 
 export default testPassState;

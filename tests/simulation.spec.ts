@@ -21,17 +21,17 @@ describe('simulationIntegrationTest', () => {
 
     console.log(outputString);
 
-    expect(outputString).toContain(startingOutput.string);
+    expect(outputString).toContain(JSON.stringify(startingOutput.output));
     expect(outputString)
-      .toContain(JSON.stringify(startingOutput.jsonObject));
+      .toContain(JSON.stringify(startingOutput.stateJsonObject));
 
     const finalOutputResult = simulationOutputIterator.next();
     const finalOutput = finalOutputResult.value;
 
 
-    expect(outputString).toContain(finalOutput.string);
+    expect(outputString).toContain(JSON.stringify(finalOutput.output));
     expect(outputString)
-      .toContain(JSON.stringify(finalOutput.jsonObject));
+      .toContain(JSON.stringify(finalOutput.stateJsonObject));
     // TODO need to better organize this, since it's too dependent on knowing the imports
     //  also iterate over the states when checking
 

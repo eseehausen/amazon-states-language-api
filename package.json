@@ -23,7 +23,8 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
-    "test": "jest --watch --verbose false",
+    "testWatch": "jest --watch --verbose false",
+    "test": "jest",
     "tsc": "tsc",
     "ts-node": "ts-node",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./"

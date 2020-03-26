@@ -1,7 +1,6 @@
 export default interface StateJsonInterface {
   Type: string;
   Comment?: string;
-  Next?: string;
   End?: boolean;
   // InputPath?: string|null|undefined;
   // OutputPath?: string|null|undefined;
