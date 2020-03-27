@@ -7,7 +7,7 @@ export default class SucceedState extends State {
   }
 
   getJsonObject(): SucceedStateJsonInterface {
-    return super.getJsonObject(true);
+    return super.getJsonObject();
   }
 
   getNextState = (): null => null;

@@ -16,7 +16,7 @@ export default class FailState extends State {
   getNextState = (): null => null;
 
   getJsonObject = (): FailStateJsonInterface => ({
-    ...super.getJsonObject(true),
+    ...super.getJsonObject(),
     Error: this.error,
     Cause: this.cause,
   });

@@ -29,7 +29,7 @@ export default abstract class NextableState extends State {
     return appendedState;
   };
 
-  getJsonObject(): NextableStateJsonInterface {
+  protected getJsonObject(): NextableStateJsonInterface {
     const baseJsonObject = super.getJsonObject();
     return this.isEndState() ? baseJsonObject : {
       ...baseJsonObject,
