@@ -46,7 +46,11 @@ const resultPassState = new PassState(
   'The basic state type- passes input or result through to output.',
 );
 
-const choiceState = new ChoiceState('Choice State', resultPassState, 'Checks for conditions to find next state, passes input through');
+const choiceState = new ChoiceState(
+  'Choice State',
+  resultPassState,
+  'Checks for conditions to find next state, passes input through',
+);
 
 const successReferencePath = '$.success';
 
@@ -122,5 +126,3 @@ console.log(demoStateMachine.simulate({ example: 'input' }));
 
 // return compiled StateMachine with statelint error check (@wmfs/statelint JS port)
 console.log(demoStateMachine.compile());
-
-export default demoStateMachine; // To test!
