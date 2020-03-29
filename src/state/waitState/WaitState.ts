@@ -13,12 +13,11 @@ export default class WaitState extends NextableState {
     super('Wait', name, next, comment);
     validateField(seconds, {
       errorMessage: `Non-positive integer seconds (${seconds}) in task ${name}.`,
-      // > 0 handles NaN as well
-      test: (secondsValue: number): boolean => secondsValue > 0 && Number.isInteger(secondsValue),
-    });
+      // >= 0 handles NaN as well
+      test: (secondsValue: number): boolean => secondsValue >= 0 && Number.isInteger(secondsValue),
+    },
+    true);
   }
-
-  getNextState = (): State | null => this.next;
 
   getJsonObject = (): WaitStateJsonInterface => ({
     ...super.getJsonObject(),

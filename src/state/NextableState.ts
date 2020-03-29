@@ -17,6 +17,9 @@ export default abstract class NextableState extends State {
 
   isEndState = (): boolean => this.next === null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected getNextState = (input: Json = {}): State | null => this.next;
+
   setNextState = (nextState: State): this => {
     // return State for chaining
     this.next = nextState;

@@ -4,12 +4,16 @@ describe('validationResult', () => {
   const testValidationFieldValue = 'test';
   it('should respond with pass and no errors when there are no issues', () => {
     expect(
-      validateField(testValidationFieldValue, [
-        {
-          errorMessage: 'We should not see this.',
-          test: (): boolean => true,
-        },
-      ]),
+      validateField(
+        testValidationFieldValue,
+        [
+          {
+            errorMessage: 'We should not see this.',
+            test: (): boolean => true,
+          },
+        ],
+        true,
+      ),
     ).toMatchObject({
       pass: true,
       errors: [],
@@ -37,7 +41,7 @@ describe('validationResult', () => {
 
 
   it('should respond with fail and errors when there are issues', () => {
-    expect(validateField(testValidationFieldValue, failTestSet)).toMatchObject({
+    expect(validateField(testValidationFieldValue, failTestSet, false)).toMatchObject({
       pass: false,
       errors: expectedErrors,
     });

@@ -7,10 +7,11 @@ export default class SucceedState extends State {
   }
 
   getJsonObject(): SucceedStateJsonInterface {
-    return super.getJsonObject();
+    // TODO handle this better
+    const jsonObject = { ...super.getJsonObject() };
+    delete jsonObject.End;
+    return jsonObject;
   }
-
-  getNextState = (): null => null;
 
   protected getSimulationOutputJsonObject = (input?: Json): Json => input;
 

@@ -11,7 +11,7 @@ interface ValidationConditionInterface<T> {
 export default function validateField<T>(
   fieldValue: T,
   validationConditions: ValidationConditionInterface<T>[] | ValidationConditionInterface<T>,
-  throwErrorOnFailure = false,
+  throwErrorOnFailure: boolean,
 ): ValidationResultInterface {
   const testedValidationConditions = Array.isArray(validationConditions)
     ? validationConditions : [validationConditions];

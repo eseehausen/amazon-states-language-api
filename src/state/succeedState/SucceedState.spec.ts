@@ -11,7 +11,6 @@ describe('getSimulatedOutput', () => {
       output: testInputString,
       stateJsonObject: {
         Type: 'Succeed',
-        End: true,
       },
     });
   });

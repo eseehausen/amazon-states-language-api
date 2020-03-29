@@ -8,7 +8,7 @@ export default class TaskState extends NextableState {
   constructor(
     name: string,
     private resource: ResourceInterface,
-    next?: State | null,
+    next: State,
     comment?: string,
   ) {
     super('Task', name, next, comment);
@@ -22,26 +22,10 @@ export default class TaskState extends NextableState {
     );
   }
 
-  protected getNextState = (): State => this.next;
+  protected getJsonObject = (): TaskStateJsonInterface => ({
+    ...super.getJsonObject(),
+    Resource: this.resource.uri,
+  });
 
-  protected checkForNext = (): void => {
-    if (this.next === null) {
-      throw new Error(
-        `Task ${this.getName()} must have a next state assigned before compilation/simulation.`,
-      );
-    }
-  };
-
-  protected getJsonObject = (): TaskStateJsonInterface => {
-    this.checkForNext();
-    return {
-      ...super.getJsonObject(),
-      Resource: this.resource.uri,
-    };
-  };
-
-  protected getSimulationOutputJsonObject = (input?: Json): Json => {
-    this.checkForNext();
-    return this.resource.mock(input);
-  };
+  protected getSimulationOutputJsonObject = (input?: Json): Json => this.resource.mock(input);
 }

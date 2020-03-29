@@ -17,7 +17,7 @@ describe('getJsonObject', () => {
       .appendState(finalState);
 
     const stateMachine = new StateMachine(
-      startingState.getStateJsonInformationGeneratorFunction(),
+      startingState,
       stateMachineComment,
       stateMachineTimeout,
     );
@@ -34,7 +34,7 @@ describe('getJsonObject', () => {
     expect(Object.keys(firstJsonObject.States).length).toEqual(3);
 
     const sparseStateMachine = new StateMachine(
-      finalState.getStateJsonInformationGeneratorFunction(),
+      finalState,
     );
     expect(sparseStateMachine.getJsonObject()).toEqual({
       StartAt: thirdStateName,

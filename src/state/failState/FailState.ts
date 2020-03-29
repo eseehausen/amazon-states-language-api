@@ -13,13 +13,16 @@ export default class FailState extends State {
 
   isEndState = (): boolean => true;
 
-  getNextState = (): null => null;
-
-  getJsonObject = (): FailStateJsonInterface => ({
-    ...super.getJsonObject(),
-    Error: this.error,
-    Cause: this.cause,
-  });
+  getJsonObject = (): FailStateJsonInterface => {
+    // TODO handle this better
+    const jsonObject = {
+      ...super.getJsonObject(),
+      Error: this.error,
+      Cause: this.cause,
+    };
+    delete jsonObject.End;
+    return jsonObject;
+  };
 
   getSimulationOutputJsonObject = (input: Json): Json => input;
 }

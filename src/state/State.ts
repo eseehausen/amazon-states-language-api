@@ -1,6 +1,6 @@
 import StateJsonObjectInterface from './StateJsonInterface';
 import validateField from '../validateField';
-import StateJsonInformationInterface from './StateJsonInformationInterface';
+import StatesJsonInterface from '../stateMachine/StatesJsonInterface';
 
 export default abstract class State {
   protected constructor(
@@ -40,41 +40,76 @@ export default abstract class State {
 
   protected abstract isEndState(): boolean;
 
-  protected getSimulationOutput(input?: Json): SimulationOutputInterface {
-    return {
-      input,
-      output: this.getSimulationOutputJsonObject(input),
-      stateJsonObject: this.getJsonObject(),
-    };
-  }
+  protected getSimulationOutput = (input?: Json): SimulationOutputInterface => ({
+    input,
+    output: this.getSimulationOutputJsonObject(input),
+    stateJsonObject: {
+      ...{ Name: this.getName() },
+      ...this.getJsonObject(),
+    },
+  });
 
   protected abstract getSimulationOutputJsonObject(input?: Json): Json;
 
   getOutputGeneratorFunction(): StateOutputGeneratorFunction {
+    let count = 0;
+    const maxCount = 1000;
     return (function* stateOutputGenerator(state: State, input: Json):
       Generator<SimulationOutputInterface> {
+      count += 1;
+      if (count > 1000) {
+        throw new Error(`Maximum count (${maxCount}) exceeded.`);
+      }
+
       const output = state.getSimulationOutput(input);
       yield output;
+
       if (!state.isEndState()) {
-        yield* stateOutputGenerator(state.getNextState(), output.output);
+        yield* stateOutputGenerator(state.getNextState(output.output), output.output);
       }
     }).bind(this, this);
   }
 
-  protected getNextState = (): State|null => null;
+  // we use this in ChoiceState
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected getNextState = (input: Json = {}): State | null => null;
 
-  getStateJsonInformationGeneratorFunction = (): () => Generator<StateJsonInformationInterface> => (
-    function* pathGenerator(state: State): Generator<StateJsonInformationInterface> {
-      yield {
-        name: state.getName(),
-        jsonObject: state.getJsonObject(),
+  protected getPossibleNextStates(): (State|null)[] {
+    return [this.getNextState()];
+  }
+
+  collectStatesJsonInformation(
+    statesJsonInformation: StatesJsonInterface,
+  ): StatesJsonInterface {
+    const stateName = this.getName();
+
+    if (!Object.prototype.hasOwnProperty.call(statesJsonInformation, stateName)) {
+      const currentStatesJsonInformation = {
+        ...statesJsonInformation,
+        [stateName]: this.getJsonObject(),
       };
-      const nextState = state.getNextState();
-      if (nextState instanceof State) {
-        yield* pathGenerator(nextState);
+
+      const possibleNextStates = this.getPossibleNextStates();
+
+      if (possibleNextStates.length > 0) {
+        return {
+          ...currentStatesJsonInformation,
+          ...possibleNextStates.reduce( // runs against all possible next states to capture branches
+            (nextStatesJsonInformation: StatesJsonInterface, possibleNextState: State|null) => ({
+              ...nextStatesJsonInformation,
+              ...(possibleNextState !== null
+                ? possibleNextState.collectStatesJsonInformation(currentStatesJsonInformation)
+                : {}
+              ),
+            }),
+            {},
+          ),
+        };
       }
-    }.bind(this, this)
-  );
+      return currentStatesJsonInformation;
+    }
+    return statesJsonInformation;
+  }
 
   getSimulatedOutput(input: Json): SimulationOutputInterface { // useful for testing
     return this.getOutputGeneratorFunction()(input).next().value;

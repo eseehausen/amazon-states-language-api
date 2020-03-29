@@ -3,7 +3,12 @@
     "target": "esnext",
     "module": "commonjs",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "json-type": ["typings/json"],
+      "simulation-output-type": ["typings/simulationOutput"]
+    }
   },
   "files": [
     "./node_modules/@types/jest/index.d.ts"
@@ -12,7 +17,7 @@
     "src/**/*.ts",
     "demo/**/*.ts",
     "jest.config.js",
-    "typings/**/index.d.ts",
+    "typings/**/*.ts",
     "tests/**/*.ts"
   ],
   "exclude": [

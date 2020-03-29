@@ -12,28 +12,24 @@ const testResource: ResourceInterface = {
 };
 
 
-const noNextTaskState = new TaskState(testName, testResource, null);
+const testTaskState = new TaskState(testName, testResource, testPassState);
 
 describe('constructor', () => {
   it('should allow for the creation of a task state with valid uri', () => {
-    expect(noNextTaskState).toBeInstanceOf(TaskState);
+    expect(testTaskState).toBeInstanceOf(TaskState);
   });
 
   it('should not allow for the creation of a task state with an invalid uri', () => {
-    expect(() => new TaskState(testName, { uri: 'Bad Uri', mock: mockFunction }))
-      .toThrowError();
+    expect(() => new TaskState(
+      testName, { uri: 'Bad Uri', mock: mockFunction }, testPassState,
+    )).toThrowError();
   });
 });
 
 
-const testTaskState = new TaskState(testName, testResource, testPassState);
 // TODO test URI validation
 describe('getSimulatedOutput', () => {
   const testInputString = 'inputted';
-
-  it('should throw an error if no next state has been added', () => {
-    expect(() => noNextTaskState.getSimulatedOutput(testInputString)).toThrowError();
-  });
 
   const taskStateOutput = testTaskState.getSimulatedOutput(testInputString);
   it('should successfully run mock and output result', () => {

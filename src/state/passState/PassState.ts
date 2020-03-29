@@ -12,8 +12,6 @@ export default class PassState extends NextableState {
     super('Pass', name, next, comment);
   }
 
-  getNextState = (): State|null => this.next;
-
   getJsonObject = (): PassStateJsonInterface => {
     const passStateJsonObject: PassStateJsonInterface = { ...super.getJsonObject() };
     if (this.result !== undefined) {

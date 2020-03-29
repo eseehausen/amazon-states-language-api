@@ -19,7 +19,6 @@ describe('getOutput', () => {
         Type: 'Fail',
         Error: testError,
         Cause: testCause,
-        End: true,
       },
     });
   });

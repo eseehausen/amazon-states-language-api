@@ -1,29 +1,22 @@
 import StateMachineJsonInterface from './StateMachineJsonInterface';
-import StatesJsonInterface from './StatesJsonInterface';
 import validateField from '../validateField';
-import StateJsonInformationInterface from '../state/StateJsonInformationInterface';
+import State from '../state/State';
+import StateMachineInterpreter from '../StateMachineInterpreter';
+import compileJsonStateMachine from '../compileJsonStateMachine';
+import JsonStateMachineCompilationInterface from '../JsonStateMachineCompilationInterface';
 
 
 // TODO - allow this class to copy a chain of states to lock it in
 export default class StateMachine {
   private version = '1.0';
+
   // this is the current default and the spec this is based on
 
-  private readonly statesJsonObject: StatesJsonInterface;
-
-  private readonly startAt: string;
-
   constructor(
-    stateJsonInformationGeneratorFunction: () => Generator<StateJsonInformationInterface>,
+    private startingState: State,
     private comment?: string,
     private timeoutSeconds?: number,
   ) {
-    this.statesJsonObject = this.collectStatesJsonObject(
-      {}, stateJsonInformationGeneratorFunction(),
-    );
-
-    this.startAt = stateJsonInformationGeneratorFunction().next().value.name;
-
     const timeoutSecondsUpperLimit = 99999999;
     if (timeoutSeconds !== undefined) {
       validateField(
@@ -39,33 +32,10 @@ export default class StateMachine {
     }
   }
 
-  collectStatesJsonObject = (
-    baseStatesJsonObject: StatesJsonInterface,
-    stateJsonInformationIterator: IterableIterator<StateJsonInformationInterface>,
-  ): StatesJsonInterface => {
-    const stateJsonInformationIteratorResult = stateJsonInformationIterator.next();
-    if (!stateJsonInformationIteratorResult.done) {
-      const { name, jsonObject } = stateJsonInformationIteratorResult.value;
-      const stateAlreadyPresent = Object.prototype.hasOwnProperty.call(
-        baseStatesJsonObject, name,
-      );
-      if (!stateAlreadyPresent) {
-        return this.collectStatesJsonObject(
-          {
-            ...baseStatesJsonObject,
-            [name]: jsonObject,
-          },
-          stateJsonInformationIterator,
-        );
-      }
-    }
-    return baseStatesJsonObject;
-  };
-
   getJsonObject = (): StateMachineJsonInterface => {
     const jsonObject: StateMachineJsonInterface = {
-      StartAt: this.startAt,
-      States: this.statesJsonObject,
+      StartAt: this.startingState.getName(),
+      States: this.startingState.collectStatesJsonInformation({}),
       Version: this.version,
     };
     if (this.timeoutSeconds !== undefined) {
@@ -80,6 +50,16 @@ export default class StateMachine {
   getSimulationOutputString = (): string => `State Machine
 Comment: ${this.comment || ''}
 Amazon States Language Version: ${this.version}
-StartAt: ${this.startAt}
+StartAt: ${this.startingState.getName()}
 TimeoutSeconds: ${this.timeoutSeconds || 'N/A'}`;
+
+  simulate = (input: Json): string => StateMachineInterpreter.simulateStateMachine(
+    this.getSimulationOutputString(),
+    this.startingState.getOutputGeneratorFunction(),
+    input,
+  );
+
+  compile = (): JsonStateMachineCompilationInterface => compileJsonStateMachine(
+    this.getJsonObject(),
+  );
 }
