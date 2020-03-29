@@ -26,6 +26,6 @@
     "test": "jest --runInBand",
     "demo": "ts-node --files ./demo/demo.ts",
     "ts-node": "ts-node --files",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx './src/**' './tests/**' './demo/**' './typings/**'"
   }
 }
