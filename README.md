@@ -12,7 +12,7 @@ To run the demo:
 ```
 npm run demo
 ```
-Check out the `demo/demo.ts` file- the annotations there currently serve as documentation.
+Check out the [`demo/demo.ts`](demo/demo.ts) file- the annotations there currently serve as documentation.
 
 ## Tests
 Unit tests are stored in .spec.ts files in the same directory as the tested class.
