@@ -6,8 +6,7 @@
   "author": "Evan Seehausen",
   "license": "MIT",
   "dependencies": {
-    "@wmfs/statelint": "^1.12.0",
-    "jsonpath": "^1.0.2"
+    "@wmfs/statelint": "^1.12.0"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
@@ -25,8 +24,8 @@
   "scripts": {
     "testWatch": "jest --watch --verbose false",
     "test": "jest",
-    "tsc": "tsc",
-    "ts-node": "ts-node",
+    "demo": "ts-node --files ./demo/demo.ts",
+    "ts-node": "ts-node --files",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./"
   }
 }

@@ -1,4 +1,4 @@
-interface ValidationResultInterface {
+export interface ValidationResultInterface {
   pass: boolean;
   errors: string[];
 }

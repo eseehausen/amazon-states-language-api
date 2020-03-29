@@ -180,6 +180,14 @@ describe('booleanTypes', () => {
     expect(baseNotChoiceRule.getSimulatedTestResult(booleanInputCorrect)).toMatchObject(
       didNotMeetConditionResultWithNoState,
     );
+
+    expect(baseNotChoiceRule.getJsonObject()).toMatchObject({
+      Next: 'Success',
+      Not: {
+        BooleanEquals: false,
+        Variable: '$.false',
+      },
+    });
   });
   // TODO test other booleans
 });

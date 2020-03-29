@@ -6,8 +6,8 @@ import validateField from '../../validateField';
 export default class WaitState extends NextableState {
   constructor(
     name: string,
-    next: State | null = null,
-    private readonly seconds: number, // required for now since it's the only supported option
+    private readonly seconds: number,
+    next: State | null = null, // required for now since it's the only supported option
     comment?: string,
   ) {
     super('Wait', name, next, comment);

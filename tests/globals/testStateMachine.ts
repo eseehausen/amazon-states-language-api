@@ -11,7 +11,7 @@ import PassState from '../../src/state/passState/PassState';
 export const defaultResult = 'Default Result';
 const defaultEndState = new PassState('Default End', null, defaultResult);
 
-const choiceState = new ChoiceState('Choice State', undefined, defaultEndState);
+const choiceState = new ChoiceState('Choice State', defaultEndState, undefined);
 
 const succeedState = new SucceedState('Success');
 

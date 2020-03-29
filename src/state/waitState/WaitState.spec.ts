@@ -6,9 +6,7 @@ const testInputString = 'Test Input String';
 const testWaitStateName = 'Wait State';
 const testSeconds = 20;
 
-const testWaitState = new WaitState(
-  testWaitStateName, null, testSeconds,
-);
+const testWaitState = new WaitState(testWaitStateName, testSeconds, null);
 
 describe('getSimulatedOutput', () => {
   it('should successfully pass through input after delay', () => {

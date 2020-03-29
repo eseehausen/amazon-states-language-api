@@ -1,12 +1,12 @@
 import * as StateLint from '@wmfs/statelint';
-import StateMachineJsonInterface from './stateMachine/StateMachineJsonInterface';
+import StateMachineJsonInterface from '../stateMachine/StateMachineJsonInterface';
 import JsonStateMachineCompilationInterface from './JsonStateMachineCompilationInterface';
 
 export default function compileJsonStateMachine(
   stateMachineJsonObject: StateMachineJsonInterface,
 ): JsonStateMachineCompilationInterface {
   const validationResults = StateLint().validate(stateMachineJsonObject);
-  const json = JSON.stringify(stateMachineJsonObject, null, ' ');
+  const json = JSON.stringify(stateMachineJsonObject);
   return {
     json,
     validation: {

@@ -8,8 +8,8 @@ export default class ChoiceState extends State {
 
   constructor(
     name: string,
-    comment?: string,
     private defaultNextState: State = null,
+    comment?: string,
   ) {
     super('Choice', name, comment);
   }

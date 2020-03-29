@@ -15,7 +15,7 @@ const defaultEndPassStateName = 'Default End';
 const defaultEndPassState = new PassState(defaultEndPassStateName, null, defaultResult);
 
 
-const testChoiceState = new ChoiceState('Test State', undefined, defaultEndPassState);
+const testChoiceState = new ChoiceState('Test State', defaultEndPassState, undefined);
 
 const booleanEqualsTrueChoiceRule = ChoiceRule.booleanEquals(true, '$');
 const booleanEqualsFalseChoiceRule = ChoiceRule.booleanEquals(false, '$');

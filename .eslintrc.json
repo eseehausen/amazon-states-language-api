@@ -37,9 +37,10 @@
   },
   "overrides": [
     {
-      "files": "*.spec.*",
+      "files": ["*.spec.*", "./demo/**/*.ts"],
       "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "spaced-comment": "off"
       }
     },
     {

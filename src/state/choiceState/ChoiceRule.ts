@@ -1,5 +1,4 @@
 import State from '../State';
-import validateField from '../../validateField';
 import ChoiceRuleComparisonJsonInterface from './ChoiceRuleComparisonJsonInterface';
 import ChoiceRuleBooleanJsonInterface from './ChoiceRuleBooleanJsonInterface';
 import ChoiceRuleBaseJsonInterface from './ChoiceRuleBaseJsonInterface';
@@ -48,26 +47,15 @@ export default class ChoiceRule {
     }
 
     if (type === ChoiceRuleComparisonType.comparison) {
-      validateField(
-        variablePath,
-        {
-          errorMessage: `VariablePath ${variablePath} is not in ReferencePath format.`,
-          test: (variablePathValue: string) => /\$(.([A-Za-z0-9_-]+))*/.test(variablePathValue),
-        },
-        true,
-      );
+      State.validateReferencePath(variablePath, true);
     }
   }
 
   getBaseJsonObject = (): ChoiceRuleBaseJsonInterface &
-    (ChoiceRuleComparisonJsonInterface | ChoiceRuleBooleanJsonInterface) => {
-    if (this.nextState === null) {
-      throw new Error('Base ChoiceRule incorrectly assigned without next state.');
-    }
-
-    return this.getJsonObject() as ChoiceRuleBaseJsonInterface &
-      (ChoiceRuleComparisonJsonInterface | ChoiceRuleBooleanJsonInterface);
-  };
+    (ChoiceRuleComparisonJsonInterface | ChoiceRuleBooleanJsonInterface) => (
+      this.getJsonObject() as ChoiceRuleBaseJsonInterface &
+      (ChoiceRuleComparisonJsonInterface | ChoiceRuleBooleanJsonInterface)
+  );
 
   getJsonObject = (): ChoiceRuleComparisonJsonInterface|ChoiceRuleBooleanJsonInterface => {
     let comparedJsonObject;
@@ -86,21 +74,9 @@ export default class ChoiceRule {
     };
   };
 
-  private extractVariableFromInput = (input: Json): Json => this.tracePath(
-    input, /(?:.([A-Za-z0-9_-]+))/g, this.variablePath.slice(0),
+  private extractVariableFromInput = (input: Json): Json => State.tracePath(
+    input, this.variablePath.slice(0),
   );
-
-  private tracePath = (input: Json, fieldRegex: RegExp, variablePath: string): Json => {
-    // naive implementation - replace with library
-    const match = fieldRegex.exec(variablePath);
-    const matchFound = match !== null;
-
-    if (matchFound && !Object.prototype.hasOwnProperty.call(input, match[1])) {
-      throw new Error(`Invalid match ${match[1]} in ReferencePath ${this.variablePath}.`);
-    }
-
-    return matchFound ? this.tracePath(input[match[1]], fieldRegex, variablePath) : input;
-  };
 
   public getSimulatedTestResult = (input: Json): ChoiceRuleSimulatedTestResultInterface => {
     const variable = this.type === ChoiceRuleComparisonType.boolean

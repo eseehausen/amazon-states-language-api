@@ -1,9 +1,9 @@
 import StateMachineJsonInterface from './StateMachineJsonInterface';
 import validateField from '../validateField';
 import State from '../state/State';
-import StateMachineInterpreter from '../StateMachineInterpreter';
-import compileJsonStateMachine from '../compileJsonStateMachine';
-import JsonStateMachineCompilationInterface from '../JsonStateMachineCompilationInterface';
+import StateMachineInterpreter from '../stateMachineInterpreter/StateMachineInterpreter';
+import compileJsonStateMachine from '../compilation/compileJsonStateMachine';
+import JsonStateMachineCompilationInterface from '../compilation/JsonStateMachineCompilationInterface';
 
 
 // TODO - allow this class to copy a chain of states to lock it in
@@ -57,6 +57,7 @@ TimeoutSeconds: ${this.timeoutSeconds || 'N/A'}`;
     this.getSimulationOutputString(),
     this.startingState.getOutputGeneratorFunction(),
     input,
+    this.timeoutSeconds,
   );
 
   compile = (): JsonStateMachineCompilationInterface => compileJsonStateMachine(

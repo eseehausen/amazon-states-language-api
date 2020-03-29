@@ -1,5 +1,5 @@
 import StateJsonObjectInterface from './StateJsonInterface';
-import validateField from '../validateField';
+import validateField, { ValidationResultInterface } from '../validateField';
 import StatesJsonInterface from '../stateMachine/StatesJsonInterface';
 
 export default abstract class State {
@@ -91,22 +91,22 @@ export default abstract class State {
 
       const possibleNextStates = this.getPossibleNextStates();
 
-      if (possibleNextStates.length > 0) {
-        return {
-          ...currentStatesJsonInformation,
-          ...possibleNextStates.reduce( // runs against all possible next states to capture branches
-            (nextStatesJsonInformation: StatesJsonInterface, possibleNextState: State|null) => ({
-              ...nextStatesJsonInformation,
-              ...(possibleNextState !== null
-                ? possibleNextState.collectStatesJsonInformation(currentStatesJsonInformation)
-                : {}
-              ),
-            }),
-            {},
+      const reducedStatesJsonInformation = possibleNextStates.reduce(
+        // runs against all possible next states to capture branches
+        (nextStatesJsonInformation: StatesJsonInterface, possibleNextState: State|null) => ({
+          ...nextStatesJsonInformation,
+          ...(possibleNextState !== null
+            ? possibleNextState.collectStatesJsonInformation(currentStatesJsonInformation)
+            : {}
           ),
-        };
-      }
-      return currentStatesJsonInformation;
+        }),
+        {},
+      );
+
+      return {
+        ...currentStatesJsonInformation,
+        ...reducedStatesJsonInformation,
+      };
     }
     return statesJsonInformation;
   }
@@ -114,4 +114,31 @@ export default abstract class State {
   getSimulatedOutput(input: Json): SimulationOutputInterface { // useful for testing
     return this.getOutputGeneratorFunction()(input).next().value;
   }
+
+  static tracePath = (input: Json, variablePath: string): Json => (
+    (function regexTracePath(
+      fieldRegex: RegExp, traceInput: Json, traceVariablePath: string,
+    ): Json {
+      // naive implementation - replace with library
+      const match = fieldRegex.exec(traceVariablePath);
+      const matchFound = match !== null;
+
+      if (matchFound && !Object.prototype.hasOwnProperty.call(traceInput, match[1])) {
+        throw new Error(`Invalid match ${match[1]} in ReferencePath.`);
+      }
+
+      return matchFound
+        ? regexTracePath(fieldRegex, traceInput[match[1]], traceVariablePath) : traceInput;
+    }(new RegExp(/(?:\.([A-Za-z0-9_-]+))/g), input, variablePath))
+  );
+
+  static validateReferencePath = (referencePath: string, throwErrorOnFailure: boolean):
+    ValidationResultInterface => validateField(
+    referencePath,
+    {
+      errorMessage: `VariablePath ${referencePath} is not in ReferencePath format.`,
+      test: (variablePathValue: string) => /\$(\.([A-Za-z0-9_-]+))*/.test(variablePathValue),
+    },
+    throwErrorOnFailure,
+  );
 }
