@@ -56,7 +56,6 @@ describe('constructor', () => {
   });
 });
 
-// TODO test URI validation
 describe('getSimulatedOutput', () => {
   const expectedOutputJsonObject = [testInputString, testOutputString, 1];
 
@@ -86,5 +85,13 @@ describe('getNextState', () => {
 
   it('should throw an error if there is no appropriate catch', () => {
     expect(() => testFailedErrorTaskState.getNextState(testInputString)).toThrowError();
+  });
+});
+
+describe('collectStatesJsonInformation', () => {
+  it('should include next states from catches', () => {
+    expect(testErrorTaskState.collectStatesJsonInformation({})).toMatchObject({
+      [testErrorPassState.getName()]: testErrorPassState.getJsonObject(),
+    });
   });
 });
